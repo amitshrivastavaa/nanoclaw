@@ -161,9 +161,7 @@ function createMessage(overrides: {
     member: overrides.memberDisplayName
       ? { displayName: overrides.memberDisplayName }
       : null,
-    guild: overrides.guildName
-      ? { name: overrides.guildName }
-      : null,
+    guild: overrides.guildName ? { name: overrides.guildName } : null,
     channel: {
       name: overrides.channelName ?? 'general',
       messages: {
@@ -496,7 +494,7 @@ describe('DiscordChannel', () => {
       await channel.connect();
 
       const attachments = new Map([
-        ['att1', { name: 'photo.png', contentType: 'image/png' }],
+        ['att1', { name: 'photo.png', contentType: 'image/png', url: 'https://cdn.discordapp.com/photo.png' }],
       ]);
       const msg = createMessage({
         content: '',
@@ -508,7 +506,7 @@ describe('DiscordChannel', () => {
       expect(opts.onMessage).toHaveBeenCalledWith(
         'dc:1234567890123456',
         expect.objectContaining({
-          content: '[Image: photo.png]',
+          content: '[Image: photo.png | url: https://cdn.discordapp.com/photo.png]',
         }),
       );
     });
@@ -565,7 +563,7 @@ describe('DiscordChannel', () => {
       await channel.connect();
 
       const attachments = new Map([
-        ['att1', { name: 'photo.jpg', contentType: 'image/jpeg' }],
+        ['att1', { name: 'photo.jpg', contentType: 'image/jpeg', url: 'https://cdn.discordapp.com/photo.jpg' }],
       ]);
       const msg = createMessage({
         content: 'Check this out',
@@ -577,7 +575,7 @@ describe('DiscordChannel', () => {
       expect(opts.onMessage).toHaveBeenCalledWith(
         'dc:1234567890123456',
         expect.objectContaining({
-          content: 'Check this out\n[Image: photo.jpg]',
+          content: 'Check this out\n[Image: photo.jpg | url: https://cdn.discordapp.com/photo.jpg]',
         }),
       );
     });
@@ -588,7 +586,7 @@ describe('DiscordChannel', () => {
       await channel.connect();
 
       const attachments = new Map([
-        ['att1', { name: 'a.png', contentType: 'image/png' }],
+        ['att1', { name: 'a.png', contentType: 'image/png', url: 'https://cdn.discordapp.com/a.png' }],
         ['att2', { name: 'b.txt', contentType: 'text/plain' }],
       ]);
       const msg = createMessage({
@@ -601,7 +599,7 @@ describe('DiscordChannel', () => {
       expect(opts.onMessage).toHaveBeenCalledWith(
         'dc:1234567890123456',
         expect.objectContaining({
-          content: '[Image: a.png]\n[File: b.txt]',
+          content: '[Image: a.png | url: https://cdn.discordapp.com/a.png]\n[File: b.txt]',
         }),
       );
     });
@@ -641,8 +639,11 @@ describe('DiscordChannel', () => {
 
       await channel.sendMessage('dc:1234567890123456', 'Hello');
 
-      const fetchedChannel = await currentClient().channels.fetch('1234567890123456');
-      expect(currentClient().channels.fetch).toHaveBeenCalledWith('1234567890123456');
+      const fetchedChannel =
+        await currentClient().channels.fetch('1234567890123456');
+      expect(currentClient().channels.fetch).toHaveBeenCalledWith(
+        '1234567890123456',
+      );
     });
 
     it('strips dc: prefix from JID', async () => {

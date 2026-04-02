@@ -7,6 +7,7 @@ import fs from 'fs';
 import path from 'path';
 
 import {
+  CLAUDE_MODEL,
   CONTAINER_IMAGE,
   CONTAINER_MAX_OUTPUT_SIZE,
   CONTAINER_TIMEOUT,
@@ -220,6 +221,10 @@ function buildContainerArgs(
 
   // Pass host timezone so container's local time matches the user's
   args.push('-e', `TZ=${TIMEZONE}`);
+
+  // Pass model selection to the container (set both so Claude Code respects it)
+  args.push('-e', `CLAUDE_MODEL=${CLAUDE_MODEL}`);
+  args.push('-e', `CLAUDE_CODE_USE_MODEL=${CLAUDE_MODEL}`);
 
   // Route API traffic through the credential proxy (containers never see real secrets)
   args.push(

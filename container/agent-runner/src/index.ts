@@ -389,9 +389,14 @@ async function runQuery(
     log(`Additional directories: ${extraDirs.join(', ')}`);
   }
 
+  const model = process.env.CLAUDE_MODEL || undefined;
+  log(`Model: ${model ?? 'NOT SET (SDK will default to sonnet)'}`);
+  log(`CLAUDE_CODE_USE_MODEL: ${process.env.CLAUDE_CODE_USE_MODEL ?? 'NOT SET'}`);
+
   for await (const message of query({
     prompt: stream,
     options: {
+      model,
       cwd: '/workspace/group',
       additionalDirectories: extraDirs.length > 0 ? extraDirs : undefined,
       resume: sessionId,
